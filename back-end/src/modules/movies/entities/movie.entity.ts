@@ -1,16 +1,29 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+} from 'typeorm';
+import { Actor } from '../../actors/entities/actor.entity';
+import { Rating } from '../../ratings/entities/rating.entity';
 
-@Entity('movies')
+@Entity()
 export class Movie {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ name: 'release_date' })
-  releaseDate: Date;
+  @Column()
+  title: string;
 
-  @Column({ name: 'movie_title' })
-  movieTitle: string;
+  @Column()
+  description: string;
 
-  @Column({ name: 'movie_description', nullable: true })
-  movieDescription?: string;
+  @ManyToMany(() => Actor, (actor) => actor.movies)
+  @JoinTable()
+  actors: Actor[];
+
+  @OneToMany(() => Rating, (rating) => rating.movie)
+  ratings: Rating[];
 }
