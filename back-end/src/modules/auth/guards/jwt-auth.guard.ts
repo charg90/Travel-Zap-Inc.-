@@ -39,22 +39,20 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Authorization header missing');
     }
 
-    const [, token] = authHeader.split(' '); // Bearer <token>
+    const [, token] = authHeader.split(' ');
 
     if (!token) {
       throw new UnauthorizedException('Token missing');
     }
 
     try {
-      const payload: JwtPayload = await this.jwtService.verifyAsync<JwtPayload>(
-        token,
-        {
-          secret: process.env.JWT_SECRET,
-        },
-      );
-      request.user = payload; // Attach payload to the request object
+      const payload: JwtPayload =
+        await this.jwtService.verifyAsync<JwtPayload>(token);
+
+      request.user = payload;
       return true;
     } catch (error) {
+      console.error('JWT verification error:', error);
       throw new UnauthorizedException('Invalid or expired token');
     }
   }
