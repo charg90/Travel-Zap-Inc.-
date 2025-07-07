@@ -15,12 +15,17 @@ export class MovieMapper {
   }
 
   static toDomain(typeORMMovie: TypeORMMovie): DomainMovie {
+    const scores = typeORMMovie.ratings?.map((rating) => rating.score) ?? [];
+    const averageRating =
+      scores.length === 0
+        ? 0
+        : scores.reduce((a, b) => a + b, 0) / scores.length;
     return DomainMovie.create(
       {
         title: new Title(typeORMMovie.title),
         description: new Description(typeORMMovie.description),
         actors: [],
-        ratings: [],
+        ratings: averageRating,
       },
       typeORMMovie.id,
     );

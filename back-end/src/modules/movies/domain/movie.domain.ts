@@ -5,7 +5,7 @@ export interface IMovieProps {
   title: Title;
   description: Description;
   actors: string[];
-  ratings: number[];
+  ratings: number;
 }
 
 export class Movie extends Entity<IMovieProps> {
@@ -22,7 +22,7 @@ export class Movie extends Entity<IMovieProps> {
   get actors(): string[] {
     return this.props.actors;
   }
-  get ratings(): number[] {
+  get ratings(): number {
     return this.props.ratings;
   }
   set title(title: Title) {
@@ -34,7 +34,7 @@ export class Movie extends Entity<IMovieProps> {
   set actors(actors: string[]) {
     this.props.actors = actors;
   }
-  set ratings(ratings: number[]) {
+  set ratings(ratings: number) {
     this.props.ratings = ratings;
   }
   static create(props: IMovieProps, id?: string): Movie {
@@ -52,5 +52,5 @@ export interface JSONMovie {
   title: string;
   description: string;
   actors: string[];
-  ratings: number[];
+  ratings: number;
 }

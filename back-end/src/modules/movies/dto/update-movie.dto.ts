@@ -18,7 +18,7 @@ export class UpdateMovieDto implements Partial<IMovieProps> {
 
   @IsArray()
   @IsOptional()
-  ratings?: number[];
+  ratings?: number;
 }
 export class UpdateMovieResponseDto {
   readonly movie: JSONMovie;

@@ -17,7 +17,7 @@ export class CreateMovieDto implements IMovieProps {
 
   @IsArray()
   @IsOptional()
-  ratings: number[] = [];
+  ratings: number;
 }
 export class CreateMovieResponseDto {
   readonly movie: JSONMovie;

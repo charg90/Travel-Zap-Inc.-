@@ -18,8 +18,6 @@ export class TypeORMMoviesRepository implements MoviesRepository {
     private readonly typeOrmRepository: Repository<TypeORMMovie>,
     @InjectRepository(TypeORMActor)
     private readonly typeOrmActorRepository: Repository<TypeORMActor>,
-    @InjectRepository(TypeORMRating)
-    private readonly typeOrmRatingRepository: Repository<TypeORMRating>,
   ) {}
 
   async create(movie: DomainMovie): Promise<DomainMovie> {
@@ -32,6 +30,7 @@ export class TypeORMMoviesRepository implements MoviesRepository {
     const movies = await this.typeOrmRepository.find({
       relations: ['actors', 'ratings'],
     });
+
     return movies.map((movie) => MovieMapper.toDomain(movie));
   }
 
@@ -65,14 +64,14 @@ export class TypeORMMoviesRepository implements MoviesRepository {
       const actors = await this.typeOrmActorRepository.findByIds(movie.actors);
       existingMovie.actors = actors;
     }
-    if (movie.ratings?.length) {
-      existingMovie.ratings = movie.ratings.map((value) => {
-        const rating = new Rating();
-        rating.score = value;
-        rating.movie = existingMovie;
-        return rating;
-      });
-    }
+    // if (movie.ratings?.length) {
+    //   existingMovie.ratings = movie.ratings.map((value) => {
+    //     const rating = new Rating();
+    //     rating.score = value;
+    //     rating.movie = existingMovie;
+    //     return rating;
+    //   });
+    // }
 
     existingMovie.title = movie.title.getValue();
     existingMovie.description = movie.description.getValue();

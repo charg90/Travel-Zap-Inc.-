@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
+import { RatingsRepository } from './repository/ratings.repository';
+import { Rating } from './domain/rating.domain';
 
 @Injectable()
 export class RatingsService {
+  constructor(private readonly ratingRepository: RatingsRepository) {}
   create(createRatingDto: CreateRatingDto) {
-    return 'This action adds a new rating';
+    const rating = Rating.create(createRatingDto);
+
+    const ratingToCreate = this.ratingRepository.create(rating);
+    return ratingToCreate;
   }
 
   findAll() {
