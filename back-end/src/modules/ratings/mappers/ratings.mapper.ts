@@ -25,4 +25,12 @@ export class RatingMapper {
 
     return typeOrmRating;
   }
+  static toJson(domainRating: DomainRating) {
+    return {
+      id: domainRating.id,
+      score: domainRating.score.getValue(),
+      comment: domainRating.comment,
+      movieId: domainRating.movieId,
+    };
+  }
 }

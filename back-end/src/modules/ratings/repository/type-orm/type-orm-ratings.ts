@@ -38,24 +38,30 @@ export class TypeORMRatingsRepository implements RatingsRepository {
     return RatingMapper.toDomain(rating);
   }
 
-  //   async update(id: string, rating: DomainRating): Promise<DomainRating | null> {
-  //     const existingRating = await this.typeOrmRepository.findOne({
-  //       where: { id },
-  //     });
-  //     if (!existingRating) {
-  //       return null;
-  //     }
+  async update(id: string, rating: DomainRating): Promise<DomainRating | null> {
+    const existingRating = await this.typeOrmRepository.findOne({
+      where: { id },
+    });
 
-  //     const updatedRatingEntity = {
-  //       ...existingRating,
-  //       score: rating.score,
-  //       movieId: rating.movieId,
-  //       userId: rating.userId,
-  //     };
+    if (!existingRating) {
+      return null;
+    }
 
-  //     const savedRating = await this.typeOrmRepository.save(updatedRatingEntity);
-  //     return RatingMapper.toDomain(savedRating);
-  //   }
+    const relatedMovie = await this.typeOrmMovieRepository.findOne({
+      where: { id: rating.movieId },
+    });
+
+    if (!relatedMovie) {
+      throw new Error(`Movie with id ${rating.movieId} not found`);
+    }
+
+    existingRating.score = rating.score.getValue();
+    existingRating.comment = rating.comment;
+    existingRating.movie = relatedMovie;
+
+    const savedRating = await this.typeOrmRepository.save(existingRating);
+    return RatingMapper.toDomain(savedRating);
+  }
 
   async delete(id: string): Promise<boolean> {
     const result = await this.typeOrmRepository.delete(id);

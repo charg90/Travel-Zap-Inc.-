@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRatingDto } from './dto/create-rating.dto';
+import {
+  CreateRatingDto,
+  CreateRatingResponseDto,
+} from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { RatingsRepository } from './repository/ratings.repository';
 import { Rating } from './domain/rating.domain';
@@ -12,25 +15,83 @@ export class RatingsService {
     try {
       const rating = Rating.create(createRatingDto);
       const ratingToCreate = await this.ratingRepository.create(rating);
-      return ratingToCreate;
+      return new CreateRatingResponseDto(ratingToCreate);
     } catch (error) {
       throw new RatingException('Error creating rating', 500);
     }
   }
 
-  findAll() {
-    return `This action returns all ratings`;
+  async findAll() {
+    try {
+      const ratings = await this.ratingRepository.findAll();
+      return ratings;
+    } catch (error) {
+      throw new RatingException('Error fetching ratings', 500);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rating`;
+  async findOne(id: string) {
+    try {
+      const rating = await this.ratingRepository.findById(id);
+      if (!rating) {
+        throw new RatingException(`Rating with ID ${id} not found`, 404);
+      }
+      return rating;
+    } catch (error) {
+      throw new RatingException(`Rating with ID ${id} not found`, 404);
+    }
   }
 
-  update(id: number, updateRatingDto: UpdateRatingDto) {
-    return `This action updates a #${id} rating`;
+  async update(id: string, updateRatingDto: UpdateRatingDto) {
+    try {
+      const existingRating = await this.ratingRepository.findById(id);
+      if (!existingRating) {
+        throw new RatingException(`Rating with ID ${id} not found`, 404);
+      }
+
+      const updateData: Partial<Rating> = {};
+      if (updateRatingDto.score) {
+        updateData.score = updateRatingDto.score;
+      }
+      if (updateRatingDto.comment) {
+        updateData.comment = updateRatingDto.comment;
+      }
+
+      const ratingToUpdate = Rating.create({
+        ...existingRating.props,
+        ...updateData,
+      });
+
+      const updatedRating = await this.ratingRepository.update(
+        id,
+        ratingToUpdate,
+      );
+
+      return updatedRating;
+    } catch (error) {
+      throw new RatingException(
+        `Error updating rating with ID ${id}: ${error.message}`,
+        500,
+      );
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} rating`;
+  async remove(id: string) {
+    try {
+      const existingRating = await this.ratingRepository.findById(id);
+      if (!existingRating) {
+        throw new RatingException(`Rating with ID ${id} not found`, 404);
+      }
+      const deleted = await this.ratingRepository.delete(id);
+      if (!deleted) {
+        throw new RatingException(`Failed to delete rating with ID ${id}`, 500);
+      }
+      return {
+        success: true,
+        message: `Rating with ID ${id} deleted successfully`,
+      };
+    } catch (error) {
+      throw new RatingException(`Rating with ID ${id} not found`, 404);
+    }
   }
 }

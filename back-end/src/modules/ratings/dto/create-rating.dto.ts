@@ -1,6 +1,7 @@
 import { IsUUID, IsInt, Min, Max, IsOptional } from 'class-validator';
-import { IRatingProps } from '../domain/rating.domain';
+import { IRatingProps, JSONRating, Rating } from '../domain/rating.domain';
 import { Score } from '../domain/ratin.value-object';
+import { RatingMapper } from '../mappers/ratings.mapper';
 
 export class CreateRatingDto implements IRatingProps {
   @IsUUID('4', { message: 'Movie ID must be a valid UUID' })
@@ -12,4 +13,12 @@ export class CreateRatingDto implements IRatingProps {
   score: Score;
   @IsOptional()
   comment?: string;
+}
+
+export class CreateRatingResponseDto {
+  readonly rating: JSONRating;
+
+  constructor(rating: Rating) {
+    this.rating = RatingMapper.toJson(rating);
+  }
 }
