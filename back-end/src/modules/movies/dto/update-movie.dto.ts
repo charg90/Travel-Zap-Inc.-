@@ -1,26 +1,29 @@
-import { IsString, IsOptional, IsObject, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
+import { IMovieProps, JSONMovie, Movie } from '../domain/movie.domain';
+import { MovieMapper } from '../mappers/movie.mapper';
+import { Description, Title } from '../domain/movies.value-object';
 
-class UpdateMoviePropsDto {
+export class UpdateMovieDto implements Partial<IMovieProps> {
   @IsString({ message: 'Title must be a string' })
   @IsOptional()
-  title?: string;
+  title?: Title;
 
   @IsString({ message: 'Description must be a string' })
   @IsOptional()
-  description?: string;
+  description?: Description;
 
+  @IsArray()
   @IsOptional()
   actors?: string[];
 
+  @IsArray()
   @IsOptional()
   ratings?: number[];
 }
+export class UpdateMovieResponseDto {
+  readonly movie: JSONMovie;
 
-export class UpdateMovieDto {
-  @IsObject()
-  @ValidateNested()
-  @Type(() => UpdateMoviePropsDto)
-  @IsOptional()
-  movie?: UpdateMoviePropsDto;
+  constructor(movie: Movie) {
+    this.movie = MovieMapper.toJson(movie);
+  }
 }

@@ -33,19 +33,19 @@ export class MoviesController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<{ movie: Movie }> {
+  async findOne(@Param('id') id: string) {
     const movie = await this.moviesService.findOne(id);
-    return { movie };
+    return movie;
   }
 
-  // @Patch(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() updateMovieDto: UpdateMovieDto,
-  // ): Promise<{ movie: Movie }> {
-  //   const movie = await this.moviesService.update(id, updateMovieDto);
-  //   return { movie };
-  // }
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateMovieDto: UpdateMovieDto,
+  ) {
+    const movie = await this.moviesService.update(id, updateMovieDto);
+    return movie;
+  }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

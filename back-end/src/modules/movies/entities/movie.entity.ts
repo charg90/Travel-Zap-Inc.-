@@ -5,13 +5,14 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
+  PrimaryColumn,
 } from 'typeorm';
 import { Actor } from '../../actors/entities/actor.entity';
 import { Rating } from '../../ratings/entities/rating.entity';
 
 @Entity()
 export class Movie {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn()
   id: string;
 
   @Column()

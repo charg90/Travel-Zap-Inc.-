@@ -2,7 +2,6 @@ import { Entity } from 'src/modules/db/domain/entity';
 import { Description, Title } from './movies.value-object';
 
 export interface IMovieProps {
-  id?: string;
   title: Title;
   description: Description;
   actors: string[];
@@ -38,14 +37,14 @@ export class Movie extends Entity<IMovieProps> {
   set ratings(ratings: number[]) {
     this.props.ratings = ratings;
   }
-  static create(props: IMovieProps): Movie {
+  static create(props: IMovieProps, id?: string): Movie {
     if (!(props.title instanceof Title)) {
       props.title = new Title(props.title);
     }
     if (!(props.description instanceof Description)) {
       props.description = new Description(props.description);
     }
-    return new Movie(props);
+    return new Movie(props, id);
   }
 }
 export interface JSONMovie {

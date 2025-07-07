@@ -4,6 +4,11 @@ import { Repository } from 'typeorm';
 import { MoviesRepository } from '../movies.repository';
 import { Movie as DomainMovie } from '../../domain/movie.domain';
 import { Movie as TypeORMMovie } from '../../entities/movie.entity';
+import { Actor as TypeORMActor } from './../../../actors/entities/actor.entity';
+import {
+  Rating,
+  Rating as TypeORMRating,
+} from './../../../ratings/entities/rating.entity';
 import { MovieMapper } from '../../mappers/movie.mapper';
 
 @Injectable()
@@ -11,6 +16,10 @@ export class TypeORMMoviesRepository implements MoviesRepository {
   constructor(
     @InjectRepository(TypeORMMovie)
     private readonly typeOrmRepository: Repository<TypeORMMovie>,
+    @InjectRepository(TypeORMActor)
+    private readonly typeOrmActorRepository: Repository<TypeORMActor>,
+    @InjectRepository(TypeORMRating)
+    private readonly typeOrmRatingRepository: Repository<TypeORMRating>,
   ) {}
 
   async create(movie: DomainMovie): Promise<DomainMovie> {
@@ -27,49 +36,53 @@ export class TypeORMMoviesRepository implements MoviesRepository {
   }
 
   async findById(id: string): Promise<DomainMovie | null> {
-    const movie = await this.typeOrmRepository.findOne({
-      where: { id },
-      relations: ['actors', 'ratings'],
-    });
+    try {
+      const movie = await this.typeOrmRepository.findOne({
+        where: { id },
+        relations: ['actors', 'ratings'],
+      });
+      if (!movie) {
+        throw new NotFoundException(`Movie with id ${id} not found`);
+      }
 
-    if (!movie) {
-      return null;
+      return MovieMapper.toDomain(movie);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return null;
+      }
+      throw error;
     }
-
-    return MovieMapper.toDomain(movie);
   }
 
-  async update(
-    id: string,
-    movie: Partial<DomainMovie>,
-  ): Promise<DomainMovie | null> {
-    // First check if movie exists
+  async update(id: string, movie: DomainMovie): Promise<DomainMovie | null> {
     const existingMovie = await this.typeOrmRepository.findOneBy({
-      id: parseInt(id, 10),
+      id,
     });
     if (!existingMovie) {
       return null;
     }
-
-    // Update only the allowed fields
-    if (movie.title) {
-      existingMovie.title = movie.title;
+    if (movie.actors?.length) {
+      const actors = await this.typeOrmActorRepository.findByIds(movie.actors);
+      existingMovie.actors = actors;
     }
-    if (movie.description) {
-      existingMovie.description = movie.description;
+    if (movie.ratings?.length) {
+      existingMovie.ratings = movie.ratings.map((value) => {
+        const rating = new Rating();
+        rating.score = value;
+        rating.movie = existingMovie;
+        return rating;
+      });
     }
-    // Note: Updating actors and ratings would require additional logic
-    // to handle the relationships properly
 
-    // Save the updated movie
+    existingMovie.title = movie.title.getValue();
+    existingMovie.description = movie.description.getValue();
+
     const updatedMovie = await this.typeOrmRepository.save(existingMovie);
-
-    // Return the updated movie
     return MovieMapper.toDomain(updatedMovie);
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.typeOrmRepository.delete(parseInt(id, 10));
+    const result = await this.typeOrmRepository.delete(id);
     return result.affected ? result.affected > 0 : false;
   }
 }

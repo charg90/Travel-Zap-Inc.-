@@ -15,18 +15,20 @@ export class MovieMapper {
   }
 
   static toDomain(typeORMMovie: TypeORMMovie): DomainMovie {
-    return DomainMovie.create({
-      id: typeORMMovie.id || '',
-      title: new Title(typeORMMovie.title),
-      description: new Description(typeORMMovie.description),
-      actors: [],
-      ratings: [],
-    });
+    return DomainMovie.create(
+      {
+        title: new Title(typeORMMovie.title),
+        description: new Description(typeORMMovie.description),
+        actors: [],
+        ratings: [],
+      },
+      typeORMMovie.id,
+    );
   }
 
   static toJson(movie: DomainMovie): JSONMovie {
     return {
-      id: movie.id || '',
+      id: movie.id,
       title: movie.title.getValue(),
       description: movie.description.getValue(),
       actors: movie.actors,
