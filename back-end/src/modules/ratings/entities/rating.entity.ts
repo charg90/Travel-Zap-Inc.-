@@ -3,8 +3,8 @@ import { Movie } from '../../movies/entities/movie.entity';
 
 @Entity()
 export class Rating {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   score: number;

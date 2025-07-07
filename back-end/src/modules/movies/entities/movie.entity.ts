@@ -12,7 +12,7 @@ import { Rating } from '../../ratings/entities/rating.entity';
 
 @Entity()
 export class Movie {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column()
