@@ -1,22 +1,21 @@
-import { Controller, Post, UseGuards, Request, Body } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, Request, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { PublicRoute } from 'src/decorators/public-route.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  @PublicRoute()
   @Post('login')
-  async login(@Body() body: { email: string; password: string }) {
-    const { email, password } = body;
-    const user = await this.authService.login(email, password);
-    return { message: 'User logged in successfully', user };
+  async login(@Body() loginDto: LoginDto) {
+    return await this.authService.login(loginDto);
   }
-
+  @PublicRoute()
   @Post('register')
-  async register(@Body() body: { email: string; password: string }) {
-    const { email, password } = body;
-    const user = await this.authService.register(email, password);
+  async register(@Body() registerDto: RegisterDto) {
+    const user = await this.authService.register(registerDto);
     return { message: 'User registered successfully', user };
   }
 }
