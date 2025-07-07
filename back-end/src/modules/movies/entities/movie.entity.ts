@@ -11,8 +11,8 @@ import { Rating } from '../../ratings/entities/rating.entity';
 
 @Entity()
 export class Movie {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   title: string;

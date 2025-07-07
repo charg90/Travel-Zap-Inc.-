@@ -1,4 +1,3 @@
-// data-source.ts (fuera de Nest)
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
