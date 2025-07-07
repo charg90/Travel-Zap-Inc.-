@@ -20,6 +20,14 @@ export class ActorsController {
     return this.actorsService.create(createActorDto);
   }
 
+  @Post(':actorId/add-to-movie/:movieId')
+  async addActorToMovie(
+    @Param('actorId') actorId: string,
+    @Param('movieId') movieId: string,
+  ) {
+    return this.actorsService.addActorToMovie(actorId, movieId);
+  }
+
   @Get()
   findAll() {
     return this.actorsService.findAll();

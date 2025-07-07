@@ -11,6 +11,9 @@ export class CreateActorDto implements IActorProps {
   @IsArray({ message: 'Movies must be an array' })
   @IsOptional()
   movies?: string[];
+  @IsString({ message: 'Last name must be a string' })
+  @IsNotEmpty({ message: 'Last name is required' })
+  lastName: Name;
 }
 export class CreateActorResponseDto {
   readonly movie: JSONActor;

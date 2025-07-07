@@ -25,7 +25,10 @@ export class TypeORMActorRepository implements ActorRepository {
   }
 
   async findById(id: string): Promise<DomainActor | null> {
-    const actor = await this.typeOrmRepository.findOne({ where: { id } });
+    const actor = await this.typeOrmRepository.findOne({
+      where: { id },
+      relations: ['movies'],
+    });
     if (!actor) {
       throw new NotFoundException(`Actor with id ${id} not found`);
     }

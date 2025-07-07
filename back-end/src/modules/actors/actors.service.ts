@@ -83,4 +83,23 @@ export class ActorsService {
       throw new ActorException(`Failed to delete actor: ${error.message}`, 500);
     }
   }
+
+  async addActorToMovie(actorId: string, movieId: string) {
+    console.log(`Adding movie ${movieId} to actor ${actorId}`);
+    const actor = await this.actorRepository.findById(actorId);
+    if (!actor) {
+      throw new ActorException(`Actor with ID ${actorId} not found`, 404);
+    }
+
+    const updatedActor = Actor.create(
+      {
+        ...actor.props,
+        movies: [...actor.movies, movieId],
+      },
+      actor.id,
+    );
+
+    const savedActor = await this.actorRepository.update(actorId, updatedActor);
+    return new SingleActorResponseDto(savedActor);
+  }
 }

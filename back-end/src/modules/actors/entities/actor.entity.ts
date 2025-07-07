@@ -9,6 +9,9 @@ export class Actor {
   @Column()
   name: string;
 
-  @ManyToMany(() => Movie, (movie) => movie.actors)
+  @Column({ name: 'last_name' })
+  lastName: string;
+
+  @ManyToMany(() => Movie, (movie) => movie.actors, { cascade: true })
   movies: Movie[];
 }

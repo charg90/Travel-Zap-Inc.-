@@ -3,15 +3,19 @@ import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { RatingsRepository } from './repository/ratings.repository';
 import { Rating } from './domain/rating.domain';
+import { RatingException } from './exeption/ratings.exeption';
 
 @Injectable()
 export class RatingsService {
   constructor(private readonly ratingRepository: RatingsRepository) {}
-  create(createRatingDto: CreateRatingDto) {
-    const rating = Rating.create(createRatingDto);
-
-    const ratingToCreate = this.ratingRepository.create(rating);
-    return ratingToCreate;
+  async create(createRatingDto: CreateRatingDto) {
+    try {
+      const rating = Rating.create(createRatingDto);
+      const ratingToCreate = await this.ratingRepository.create(rating);
+      return ratingToCreate;
+    } catch (error) {
+      throw new RatingException('Error creating rating', 500);
+    }
   }
 
   findAll() {
