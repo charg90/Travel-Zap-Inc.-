@@ -41,11 +41,13 @@ services:
         echo 'Database is ready. Creating movies_db if it does not exist...';
         # Crea la base de datos 'movies_db' si no existe
         # PGPASSWORD se usa para pasar la contraseña a psql sin prompt
-        PGPASSWORD=postgres psql -h database -U postgres -d postgres -c 'CREATE DATABASE IF NOT EXISTS movies_db;' || true;
+        PGPASSWORD=postgres psql -h database -d postgres -U postgres -c 'CREATE DATABASE IF NOT EXISTS movies_db;' || true;
         echo 'Database movies_db ensured. Running migrations...';
         # Ejecuta las migraciones de TypeORM
         npm run migration:run;
-        echo 'Migrations completed. Starting backend application...';
+        echo 'Migrations completed. Running seed script...';
+        npm run seed; # <--- ¡Esta es la línea clave que se ha añadido!
+        echo 'Seed script completed. Starting backend application...';
         # Inicia la aplicación NestJS en modo desarrollo (o producción si cambias el CMD del Dockerfile)
         npm run start:dev
       "
