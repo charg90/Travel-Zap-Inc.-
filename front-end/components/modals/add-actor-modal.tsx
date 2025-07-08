@@ -4,19 +4,22 @@ import type React from "react";
 
 import { useState } from "react";
 import { FormModal } from "./modal";
-import type { Actor } from "@/types";
+import type { Actor, Movie } from "@/types";
 import { actorsApi } from "@/lib/api/actors";
+import MultiSelect from "../multi-select";
 
 interface AddActorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (actor: Omit<Actor, "id">) => void;
+  movies: Movie[];
 }
 
 export default function AddActorModal({
   isOpen,
   onClose,
   onSubmit,
+  movies = [],
 }: AddActorModalProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -51,10 +54,15 @@ export default function AddActorModal({
 
     try {
       const response = await actorsApi.createActor({
-        name: formData.name.trim(),
-        lastName: formData.lastName.trim(),
+        name: formData.name,
+        lastName: formData.lastName,
+        movies: formData.movies.length > 0 ? formData.movies : undefined,
       });
+
+      console.log("Actor created:", response);
+
       console.log("Actor added successfully:", response);
+
       onSubmit(formData);
 
       setFormData({ name: "", lastName: "", movies: [] });
@@ -165,47 +173,17 @@ export default function AddActorModal({
           >
             Movies
           </label>
-          <div className="flex gap-2 mb-3">
-            <input
-              id="movies"
-              type="text"
-              value={movieInput}
-              onChange={(e) => setMovieInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="input-field flex-1"
-              placeholder="Enter movie name and press Enter"
-              disabled={isSubmitting}
-            />
-            <button
-              type="button"
-              onClick={addMovie}
-              disabled={!movieInput.trim() || isSubmitting}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors disabled:opacity-50"
-            >
-              Add
-            </button>
-          </div>
-
-          {formData.movies.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {formData.movies.map((movie, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                >
-                  {movie}
-                  <button
-                    type="button"
-                    onClick={() => removeMovie(movie)}
-                    disabled={isSubmitting}
-                    className="text-blue-600 hover:text-blue-800 focus:outline-none"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
+          <MultiSelect
+            options={movies.map((movie) => ({
+              value: movie.id,
+              label: movie.title,
+            }))}
+            value={formData.movies}
+            onChange={(movies) => setFormData((prev) => ({ ...prev, movies }))}
+            placeholder="Select movies..."
+            disabled={isSubmitting}
+            error={errors.movies}
+          />
         </div>
 
         <div className="text-sm text-gray-500">* Required fields</div>

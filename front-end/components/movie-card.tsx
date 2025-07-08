@@ -10,7 +10,6 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
-  console.log("Rendering MovieCard for:", movie);
   return (
     <Link href={`/dashboard/movies/${movie.id}`}>
       <div className="card overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
@@ -33,7 +32,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
           </p>
 
           <div className="text-xs text-gray-500">
-            <span className="font-medium">Cast:</span> {movie.actors}
+            <span className="font-medium">Cast:</span> {movie.actors.join(", ")}
           </div>
         </div>
       </div>

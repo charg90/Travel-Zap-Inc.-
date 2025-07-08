@@ -1,13 +1,13 @@
 export interface Movie {
-  id: number;
+  id: string;
   title: string;
   description: string;
-  actors: string;
+  actors: string[];
   ratings: number;
 }
 
 export interface Actor {
-  id: number;
+  id: string;
   name: string;
   lastName: string;
   movies?: string[];

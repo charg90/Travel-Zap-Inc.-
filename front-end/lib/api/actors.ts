@@ -57,7 +57,11 @@ class ActorsApi {
 
   // Create new actor
   async createActor(data: CreateActorData): Promise<Actor> {
-    return this.client.post<Actor, CreateActorData>("/actors", data);
+    const response = await this.client.post<{ actor: Actor }, CreateActorData>(
+      "/actors",
+      data
+    );
+    return response.actor;
   }
 
   // Update actor
@@ -80,6 +84,13 @@ class ActorsApi {
   async getActorsByMovie(movieId: number, isServer = false): Promise<Actor[]> {
     const client = isServer ? this.serverClient : this.client;
     return client.get<Actor[]>(`/actors/movie/${movieId}`);
+  }
+  // Add actor to movie
+  async addActorToMovie(actorId: string, movieId: string): Promise<void> {
+    return this.client.post<void>(
+      `/actors/${actorId}/add-to-movie/${movieId}`,
+      {}
+    );
   }
 }
 

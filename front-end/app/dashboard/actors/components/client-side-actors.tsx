@@ -11,6 +11,7 @@ type Props = {
   total: number;
   initialTotalPage: number;
   page: number;
+  movies: string[];
 };
 
 function ClientSideActors({
@@ -18,6 +19,7 @@ function ClientSideActors({
   total,
   initialTotalPage,
   page,
+  movies,
 }: Props) {
   const [actors, setActors] = useState(initialActors);
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,6 +97,7 @@ function ClientSideActors({
       <AddActorModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
+        movies={movies}
         onSubmit={(newActor) => {
           const actorWithId = { ...newActor, id: Date.now() };
           setActors((prev) => [...prev, actorWithId]);
