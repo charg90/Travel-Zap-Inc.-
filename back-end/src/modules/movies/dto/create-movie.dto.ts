@@ -15,8 +15,7 @@ export class CreateMovieDto implements IMovieProps {
   @IsOptional()
   actors: string[] = [];
 
-  @IsArray()
-  @IsOptional()
+  @IsNotEmpty({ message: 'Ratings are required' })
   ratings: number;
 }
 export class CreateMovieResponseDto {

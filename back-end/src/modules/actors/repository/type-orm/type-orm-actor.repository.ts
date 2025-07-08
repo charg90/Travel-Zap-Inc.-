@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ActorRepository } from '../actor.repository';
 import { Actor as DomainActor } from '../../domain/actors.domain';
 import { Actor as TypeORMActor } from '../../entities/actor.entity';
+import { Movie as TypeORMMovie } from '../../../movies/entities/movie.entity';
 import { ActorMapper } from '../../mappers/actor.mappers';
 
 @Injectable()
@@ -46,10 +47,41 @@ export class TypeORMActorRepository implements ActorRepository {
   }
 
   async update(id: string, actor: DomainActor): Promise<DomainActor> {
-    const typeOrmActor = ActorMapper.toTypeORM(actor);
-    const updatedActor = await this.typeOrmRepository.save(typeOrmActor);
+    const existingActor = await this.typeOrmRepository.findOne({
+      where: { id },
+      relations: ['movies'],
+    });
 
-    return ActorMapper.toDomain(updatedActor);
+    if (!existingActor) {
+      throw new NotFoundException(`Actor with id ${id} not found`);
+    }
+
+    existingActor.name = actor.name.getValue();
+    existingActor.lastName = actor.lastName.getValue();
+
+    if (actor.movies && Array.isArray(actor.movies)) {
+      const movies: TypeORMMovie[] = actor.movies.map((movieId: string) => {
+        const movie = new TypeORMMovie();
+        movie.id = movieId;
+        return movie;
+      });
+      existingActor.movies = movies;
+    }
+
+    const updatedActor = await this.typeOrmRepository.save(existingActor);
+
+    const reloadedActor = await this.typeOrmRepository.findOne({
+      where: { id: updatedActor.id },
+      relations: ['movies'],
+    });
+
+    if (!reloadedActor) {
+      throw new NotFoundException(
+        'Failed to load updated actor with relations',
+      );
+    }
+
+    return ActorMapper.toDomain(reloadedActor);
   }
 
   async delete(id: string): Promise<boolean> {

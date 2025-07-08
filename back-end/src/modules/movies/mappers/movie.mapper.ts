@@ -23,7 +23,10 @@ export class MovieMapper {
       {
         title: new Title(typeORMMovie.title),
         description: new Description(typeORMMovie.description),
-        actors: [],
+        actors:
+          typeORMMovie.actors?.map((actor) =>
+            [actor.name, actor.lastName].filter(Boolean).join(' '),
+          ) ?? [],
         ratings: averageRating,
       },
       typeORMMovie.id,

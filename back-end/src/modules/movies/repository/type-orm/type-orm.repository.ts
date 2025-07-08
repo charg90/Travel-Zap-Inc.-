@@ -5,10 +5,6 @@ import { MoviesRepository } from '../movies.repository';
 import { Movie as DomainMovie } from '../../domain/movie.domain';
 import { Movie as TypeORMMovie } from '../../entities/movie.entity';
 import { Actor as TypeORMActor } from './../../../actors/entities/actor.entity';
-import {
-  Rating,
-  Rating as TypeORMRating,
-} from './../../../ratings/entities/rating.entity';
 import { MovieMapper } from '../../mappers/movie.mapper';
 
 @Injectable()
@@ -64,14 +60,6 @@ export class TypeORMMoviesRepository implements MoviesRepository {
       const actors = await this.typeOrmActorRepository.findByIds(movie.actors);
       existingMovie.actors = actors;
     }
-    // if (movie.ratings?.length) {
-    //   existingMovie.ratings = movie.ratings.map((value) => {
-    //     const rating = new Rating();
-    //     rating.score = value;
-    //     rating.movie = existingMovie;
-    //     return rating;
-    //   });
-    // }
 
     existingMovie.title = movie.title.getValue();
     existingMovie.description = movie.description.getValue();
