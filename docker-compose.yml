@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:latest
+    container_name: movie_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movies_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./back-end
+    container_name: movie_backend
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: movies_db
+      JWT_SECRET: jwt_secret_key
+
+      DATABASE_URL: postgres://postgres:postgres@database:5432/movies_db
+    depends_on:
+      - database
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready (5s delay)...';
+        sleep 5; # Pequeña pausa inicial para dar tiempo a la base de datos a inicializarse
+        # Espera hasta que la base de datos esté lista para aceptar conexiones
+        until pg_isready -h database -p 5432 -U postgres; do
+          echo 'Still waiting for database...';
+          sleep 2;
+        done;
+        echo 'Database is ready. Creating movies_db if it does not exist...';
+        # Crea la base de datos 'movies_db' si no existe
+        # PGPASSWORD se usa para pasar la contraseña a psql sin prompt
+        PGPASSWORD=postgres psql -h database -U postgres -d postgres -c 'CREATE DATABASE IF NOT EXISTS movies_db;' || true;
+        echo 'Database movies_db ensured. Running migrations...';
+        # Ejecuta las migraciones de TypeORM
+        npm run migration:run;
+        echo 'Migrations completed. Starting backend application...';
+        # Inicia la aplicación NestJS en modo desarrollo (o producción si cambias el CMD del Dockerfile)
+        npm run start:dev
+      "
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:
