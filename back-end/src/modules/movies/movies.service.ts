@@ -13,7 +13,7 @@ export class MoviesService {
 
   async create(
     createMovieDto: CreateMovieDto,
-  ): Promise<CreateMovieResponseDto | MovieException> {
+  ): Promise<CreateMovieResponseDto> {
     try {
       const movie = Movie.create(createMovieDto);
 
@@ -21,37 +21,43 @@ export class MoviesService {
 
       return new CreateMovieResponseDto(createdMovie);
     } catch (error) {
-      return new MovieException(
-        `Failed to create movie: ${error.message}`,
-        500,
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      throw new MovieException(`Failed to create movie: ${errorMessage}`, 500);
     }
   }
 
-  async findAll(): Promise<GetAllMoviesResponseDto | MovieException> {
+  async findAll(): Promise<GetAllMoviesResponseDto> {
     try {
       const movies = await this.moviesRepository.findAll();
 
       return new GetAllMoviesResponseDto(movies);
     } catch (error) {
-      return new MovieException(
-        `Failed to retrieve movies: ${error.message}`,
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      throw new MovieException(
+        `Failed to retrieve movies: ${errorMessage}`,
         500,
       );
     }
   }
 
-  async findOne(id: string): Promise<SingleMovieResponseDto | MovieException> {
+  async findOne(id: string): Promise<SingleMovieResponseDto> {
     try {
       const movie = await this.moviesRepository.findById(id);
 
       if (!movie) {
-        return new NotFoundException(`Movie with ID ${id} not found`);
+        throw new NotFoundException(`Movie with ID ${id} not found`);
       }
       return new SingleMovieResponseDto(movie);
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       throw new MovieException(
-        `Failed to retrieve movie with ID ${id}: ${error.message}`,
+        `Failed to retrieve movie with ID ${id}: ${errorMessage}`,
         500,
       );
     }
@@ -98,8 +104,10 @@ export class MoviesService {
 
       return new SingleMovieResponseDto(result);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       throw new MovieException(
-        `Failed to update movie with ID ${id}: ${error.message}`,
+        `Failed to update movie with ID ${id}: ${errorMessage}`,
         500,
       );
     }

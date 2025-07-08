@@ -16,7 +16,9 @@ export class ActorsService {
       const actorCreated = await this.actorRepository.create(actor);
       return new CreateActorResponseDto(actorCreated);
     } catch (error) {
-      throw new ActorException(`Failed to create actor: ${error.message}`, 500);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      throw new ActorException(`Failed to create actor: ${errorMessage}`, 500);
     }
   }
 
@@ -25,8 +27,10 @@ export class ActorsService {
       const actors = await this.actorRepository.findAll();
       return new GetAllActorsResponseDto(actors);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       throw new ActorException(
-        `Failed to retrieve actors: ${error.message}`,
+        `Failed to retrieve actors: ${errorMessage}`,
         500,
       );
     }
@@ -64,7 +68,9 @@ export class ActorsService {
       const updatedActor = await this.actorRepository.update(id, actorToUpdate);
       return new SingleActorResponseDto(updatedActor);
     } catch (error) {
-      throw new ActorException(`Failed to update actor: ${error.message}`, 500);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      throw new ActorException(`Failed to update actor: ${errorMessage}`, 500);
     }
   }
 

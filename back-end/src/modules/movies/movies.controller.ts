@@ -8,12 +8,10 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  HttpException,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { Movie } from './domain/movie.domain';
 
 @Controller('movies')
 export class MoviesController {

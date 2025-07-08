@@ -1,6 +1,5 @@
-import { Movie as DomainMovie, JSONMovie, Movie } from '../domain/movie.domain';
+import { Movie as DomainMovie, JSONMovie } from '../domain/movie.domain';
 import { Movie as TypeORMMovie } from '../entities/movie.entity';
-import { Actor } from '../../actors/entities/actor.entity';
 import { Description, Title } from '../domain/movies.value-object';
 
 export class MovieMapper {

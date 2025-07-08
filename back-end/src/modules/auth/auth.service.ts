@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthRepository } from './repositories/auth.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -33,12 +33,12 @@ export class AuthService {
         loginDto.email,
       );
       if (!isRegistered) {
-        throw new HttpException('User not found', 404);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
       const user = User.create(loginDto);
       const response = await this.authRepository.login(user);
       if (!response) {
-        throw new HttpException('Invalid credentials', 401);
+        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
       const payload = { email: response.email, sub: response.id };
       const accessToken = this.jwtService.sign(payload);
@@ -53,7 +53,11 @@ export class AuthService {
       if (err instanceof HttpException) {
         throw err;
       }
-      throw new HttpException(`Error logging in user: ${err}`, 500);
+
+      throw new HttpException(
+        `Error logging in user: ${err}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      ); // Use HttpStatus enum
     }
   }
 
@@ -61,7 +65,10 @@ export class AuthService {
     try {
       return this.authRepository.findByEmail(email);
     } catch (err) {
-      throw new HttpException(`Error finding user by email: ${err}`, 500);
+      throw new HttpException(
+        `Error finding user by email: ${err}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

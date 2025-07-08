@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   CreateRatingDto,
   CreateRatingResponseDto,
@@ -17,6 +17,9 @@ export class RatingsService {
       const ratingToCreate = await this.ratingRepository.create(rating);
       return new CreateRatingResponseDto(ratingToCreate);
     } catch (error) {
+      if (error instanceof RatingException) {
+        throw error;
+      }
       throw new RatingException('Error creating rating', 500);
     }
   }
@@ -26,6 +29,9 @@ export class RatingsService {
       const ratings = await this.ratingRepository.findAll();
       return ratings;
     } catch (error) {
+      if (error instanceof RatingException) {
+        throw error;
+      }
       throw new RatingException('Error fetching ratings', 500);
     }
   }
@@ -38,6 +44,9 @@ export class RatingsService {
       }
       return rating;
     } catch (error) {
+      if (error instanceof RatingException) {
+        throw error;
+      }
       throw new RatingException(`Rating with ID ${id} not found`, 404);
     }
   }
@@ -69,9 +78,20 @@ export class RatingsService {
 
       return updatedRating;
     } catch (error) {
+      if (error instanceof RatingException) {
+        throw error;
+      }
+      if (
+        error instanceof Error &&
+        error.message.includes('Score must be between 0 and 10')
+      ) {
+        throw new RatingException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       throw new RatingException(
-        `Error updating rating with ID ${id}: ${error.message}`,
-        500,
+        `Error updating rating with ID ${id}: ${errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
