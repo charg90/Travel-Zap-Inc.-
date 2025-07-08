@@ -1,21 +1,41 @@
 "use client";
+import AddMovieModal from "@/components/modals/add-movie-modal";
 import MovieCard from "@/components/movie-card";
 import Pagination from "@/components/pagination";
-import { Movie } from "@/types";
+import { Actor, Movie } from "@/types";
 import { Plus, Search } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Props = {
   initialMovies: Movie[];
   totalPagesDb: number;
   page: number;
+  actors: Actor[];
 };
 
-function ClientSideDashboard({ initialMovies, totalPagesDb, page }: Props) {
+function ClientSideDashboard({
+  initialMovies,
+  totalPagesDb,
+  page,
+  actors,
+}: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [movies, setMovies] = useState(initialMovies);
   const [totalPages, setTotalPages] = useState(totalPagesDb);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const handleOnSubmit = (movie: Omit<Movie, "id" | "ratings" | "actors">) => {
+    console.log(movie);
+
+    setMovies((prevMovies) => [
+      ...prevMovies,
+      { ...movie, id: Date.now().toString(), ratings: 0, actors: [] },
+    ]);
+  };
+  useEffect(() => {
+    setMovies(initialMovies);
+  }, [initialMovies, totalPagesDb, page]);
 
   return (
     <>
@@ -39,7 +59,10 @@ function ClientSideDashboard({ initialMovies, totalPagesDb, page }: Props) {
             />
           </div>
 
-          <button className="flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <button
+            className="flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            onClick={() => setShowAddModal(true)}
+          >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Add Movie</span>
           </button>
@@ -60,6 +83,13 @@ function ClientSideDashboard({ initialMovies, totalPagesDb, page }: Props) {
             onPageChange={setCurrentPage}
           />
         )}
+
+        <AddMovieModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onSubmit={handleOnSubmit}
+          actors={actors}
+        />
       </div>
     </>
   );

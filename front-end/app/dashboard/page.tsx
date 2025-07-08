@@ -1,13 +1,20 @@
-import { moviesApi } from "@/lib/api/movies";
 import ClientSideDashboard from "./component/client-side-dasboard";
+import { actorsApi } from "@/lib/api/actors";
+import { getMovies } from "@/lib/api/server-side-fetch";
 
 export default async function Dashboard() {
-  const { movies, totalPages, page } = await moviesApi.getMovies(
+  const { movies, totalPages, page } = await getMovies({
+    page: 1,
+    limit: 8,
+    sortBy: "rating",
+    sortOrder: "desc",
+  });
+  const { actors } = await actorsApi.getActors(
     {
       page: 1,
-      limit: 8,
-      sortBy: "rating",
-      sortOrder: "desc",
+      limit: 10,
+      sortBy: "name",
+      sortOrder: "asc",
     },
     true
   );
@@ -18,6 +25,7 @@ export default async function Dashboard() {
         initialMovies={movies}
         totalPagesDb={totalPages}
         page={page}
+        actors={actors}
       />
     </div>
   );

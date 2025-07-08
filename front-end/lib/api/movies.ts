@@ -19,8 +19,8 @@ export interface MoviesResponse {
 export interface CreateMovieData {
   title: string;
   description: string;
-  actors: string;
-  rating: number;
+  actors?: string;
+  ratings: number;
 }
 
 export interface UpdateMovieData {
@@ -59,8 +59,8 @@ class MoviesApi {
     return this.client.post<Movie, CreateMovieData>("/movies", data);
   }
 
-  async updateMovie(id: number, data: UpdateMovieData): Promise<Movie> {
-    return this.client.put<Movie, UpdateMovieData>(`/movies/${id}`, data);
+  async updateMovie(id: string, data: UpdateMovieData): Promise<Movie> {
+    return this.client.patch<Movie, UpdateMovieData>(`/movies/${id}`, data);
   }
 
   async deleteMovie(id: number): Promise<void> {
@@ -76,10 +76,11 @@ class MoviesApi {
     const client = isServer ? this.serverClient : this.client;
     return client.get<Movie[]>(`/movies/actor/${actorId}`);
   }
-
-  async getPopularMovies(limit = 10, isServer = false): Promise<Movie[]> {
-    const client = isServer ? this.serverClient : this.client;
-    return client.get<Movie[]>(`/movies/popular?limit=${limit}`);
+  async submitRating(movieId: string, score: number) {
+    return this.client.post("ratings", {
+      movieId,
+      score,
+    });
   }
 }
 

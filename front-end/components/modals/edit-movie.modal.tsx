@@ -1,41 +1,87 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FormModal } from "./modal";
 import type { Movie } from "@/types";
-import { useAddMovie } from "@/hooks/use-add-movie";
+import { moviesApi } from "@/lib/api/movies";
+import { useRouter } from "next/navigation";
+import { revalidateMovies } from "@/actions/revalidate-movies";
 
-interface AddMovieModalProps {
+interface EditMovieModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (movie: Omit<Movie, "id" | "ratings" | "actors">) => void;
+  movie: Movie;
 }
 
-export default function AddMovieModal({
+export default function EditMovieModal({
   isOpen,
   onClose,
-  onSubmit,
-}: AddMovieModalProps) {
+  movie,
+}: EditMovieModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    ratings: 0,
   });
-  const { createMovie, isSubmitting, errors } = useAddMovie(() => {
-    onSubmit(formData);
-    setFormData({ title: "", description: "", ratings: 0 });
-    onClose();
-  });
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const [errors, setErrors] = useState<{
+    title?: string;
+    description?: string;
+  }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isOpen && movie) {
+      setFormData({
+        title: movie.title || "",
+        description: movie.description || "",
+      });
+      setErrors({});
+      setIsSubmitting(false);
+    }
+  }, [isOpen, movie]);
+
+  const validate = () => {
+    const newErrors: typeof errors = {};
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    return newErrors;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    createMovie(formData);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setIsSubmitting(true);
+
+    try {
+      const updatedMovie = {
+        title: formData.title,
+        description: formData.description,
+      };
+
+      await moviesApi.updateMovie(movie.id, updatedMovie);
+
+      await revalidateMovies();
+      router.refresh();
+
+      onClose();
+    } catch {
+      setErrors({ title: "Failed to update movie" });
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <FormModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Add New Movie"
+      title="Edit Movie"
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       size="lg"
@@ -43,13 +89,13 @@ export default function AddMovieModal({
       <div className="space-y-6">
         <div>
           <label
-            htmlFor="title"
+            htmlFor="edit-title"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
             Title *
           </label>
           <input
-            id="title"
+            id="edit-title"
             type="text"
             value={formData.title}
             onChange={(e) =>
@@ -70,13 +116,13 @@ export default function AddMovieModal({
 
         <div>
           <label
-            htmlFor="description"
+            htmlFor="edit-description"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
             Description *
           </label>
           <textarea
-            id="description"
+            id="edit-description"
             value={formData.description}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, description: e.target.value }))

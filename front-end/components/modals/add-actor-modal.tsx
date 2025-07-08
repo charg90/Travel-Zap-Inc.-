@@ -26,7 +26,6 @@ export default function AddActorModal({
     lastName: "",
     movies: [] as string[],
   });
-  const [movieInput, setMovieInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -66,7 +65,7 @@ export default function AddActorModal({
       onSubmit(formData);
 
       setFormData({ name: "", lastName: "", movies: [] });
-      setMovieInput("");
+
       setErrors({});
       onClose();
     } catch (error) {
@@ -76,29 +75,29 @@ export default function AddActorModal({
     }
   };
 
-  const addMovie = () => {
-    if (movieInput.trim() && !formData.movies.includes(movieInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        movies: [...prev.movies, movieInput.trim()],
-      }));
-      setMovieInput("");
-    }
-  };
+  // const addMovie = () => {
+  //   if (movieInput.trim() && !formData.movies.includes(movieInput.trim())) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       movies: [...prev.movies, movieInput.trim()],
+  //     }));
+  //     setMovieInput("");
+  //   }
+  // };
 
-  const removeMovie = (movieToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      movies: prev.movies.filter((movie) => movie !== movieToRemove),
-    }));
-  };
+  // const removeMovie = (movieToRemove: string) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     movies: prev.movies.filter((movie) => movie !== movieToRemove),
+  //   }));
+  // };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addMovie();
-    }
-  };
+  // const handleKeyPress = (e: React.KeyboardEvent) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault();
+  //     addMovie();
+  //   }
+  // };
 
   return (
     <FormModal
