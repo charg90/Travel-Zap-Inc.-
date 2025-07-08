@@ -15,7 +15,7 @@ export class AuthController {
   @PublicRoute()
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    const user = await this.authService.register(registerDto);
-    return { message: 'User registered successfully', user };
+    await this.authService.register(registerDto);
+    return { message: 'User registered successfully' };
   }
 }
