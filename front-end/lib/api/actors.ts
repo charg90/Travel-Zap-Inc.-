@@ -65,8 +65,8 @@ class ActorsApi {
   }
 
   // Update actor
-  async updateActor(id: number, data: UpdateActorData): Promise<Actor> {
-    return this.client.put<Actor, UpdateActorData>(`/actors/${id}`, data);
+  async updateActor(id: string, data: UpdateActorData): Promise<Actor> {
+    return this.client.patch<Actor, UpdateActorData>(`/actors/${id}`, data);
   }
 
   // Delete actor

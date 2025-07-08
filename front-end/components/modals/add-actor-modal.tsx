@@ -75,30 +75,6 @@ export default function AddActorModal({
     }
   };
 
-  // const addMovie = () => {
-  //   if (movieInput.trim() && !formData.movies.includes(movieInput.trim())) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       movies: [...prev.movies, movieInput.trim()],
-  //     }));
-  //     setMovieInput("");
-  //   }
-  // };
-
-  // const removeMovie = (movieToRemove: string) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     movies: prev.movies.filter((movie) => movie !== movieToRemove),
-  //   }));
-  // };
-
-  // const handleKeyPress = (e: React.KeyboardEvent) => {
-  //   if (e.key === "Enter") {
-  //     e.preventDefault();
-  //     addMovie();
-  //   }
-  // };
-
   return (
     <FormModal
       isOpen={isOpen}

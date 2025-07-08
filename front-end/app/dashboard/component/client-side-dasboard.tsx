@@ -13,12 +13,7 @@ type Props = {
   actors: Actor[];
 };
 
-function ClientSideDashboard({
-  initialMovies,
-  totalPagesDb,
-  page,
-  actors,
-}: Props) {
+function ClientSideDashboard({ initialMovies, totalPagesDb, page }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [movies, setMovies] = useState(initialMovies);
@@ -88,7 +83,6 @@ function ClientSideDashboard({
           isOpen={showAddModal}
           onClose={() => setShowAddModal(false)}
           onSubmit={handleOnSubmit}
-          actors={actors}
         />
       </div>
     </>

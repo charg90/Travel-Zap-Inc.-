@@ -2,16 +2,16 @@
 import ActorCard from "@/components/actor-card";
 import AddActorModal from "@/components/modals/add-actor-modal";
 import Pagination from "@/components/pagination";
-import { Actor } from "@/types";
+import { Actor, Movie } from "@/types";
 import { Plus, Search, User } from "lucide-react";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 
 type Props = {
   initialActors: Actor[];
   total: number;
   initialTotalPage: number;
   page: number;
-  movies: string[];
+  movies: Movie[];
 };
 
 function ClientSideActors({
@@ -34,6 +34,10 @@ function ClientSideActors({
       actor.movies?.some((movie) => movie.toLowerCase().includes(searchLower))
     );
   });
+
+  useEffect(() => {
+    setActors(initialActors);
+  }, [initialActors]);
 
   return (
     <div className="space-y-6">
