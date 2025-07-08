@@ -15,12 +15,22 @@ export class TypeORMActorRepository implements ActorRepository {
 
   async create(actor: DomainActor): Promise<DomainActor> {
     const typeOrmActor = ActorMapper.toTypeORM(actor);
-    const savedActor = await this.typeOrmRepository.save(typeOrmActor);
-    return ActorMapper.toDomain(savedActor);
+
+    await this.typeOrmRepository.save(typeOrmActor);
+    const savedWithRelations = await this.typeOrmRepository.findOne({
+      where: { id: typeOrmActor.id },
+      relations: ['movies'],
+    });
+    if (!savedWithRelations) {
+      throw new NotFoundException('Failed to load saved actor with relations');
+    }
+    return ActorMapper.toDomain(savedWithRelations);
   }
 
   async findAll(): Promise<DomainActor[]> {
-    const actors = await this.typeOrmRepository.find();
+    const actors = await this.typeOrmRepository.find({
+      relations: ['movies'],
+    });
     return actors.map((actor) => ActorMapper.toDomain(actor));
   }
 
