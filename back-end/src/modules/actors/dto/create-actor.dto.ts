@@ -16,9 +16,9 @@ export class CreateActorDto implements IActorProps {
   lastName: Name;
 }
 export class CreateActorResponseDto {
-  readonly movie: JSONActor;
+  readonly actor: JSONActor;
 
-  constructor(movie: Actor) {
-    this.movie = ActorMapper.toJson(movie);
+  constructor(actor: Actor) {
+    this.actor = ActorMapper.toJson(actor);
   }
 }
