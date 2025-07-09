@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MoviesModule } from './modules/movies/movies.module';
 import { ActorsModule } from './modules/actors/actors.module';
 import { RatingsModule } from './modules/ratings/ratings.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -36,12 +38,11 @@ import { RatingsModule } from './modules/ratings/ratings.module';
         };
       },
     }),
-
     MoviesModule,
-
     ActorsModule,
-
     RatingsModule,
+    UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ActorsService } from './actors.service';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
@@ -12,23 +21,43 @@ export class ActorsController {
     return this.actorsService.create(createActorDto);
   }
 
+  @Post(':actorId/add-to-movie/:movieId')
+  async addActorToMovie(
+    @Param('actorId') actorId: string,
+    @Param('movieId') movieId: string,
+  ) {
+    return this.actorsService.addActorToMovie(actorId, movieId);
+  }
+
   @Get()
-  findAll() {
-    return this.actorsService.findAll();
+  findAll(
+    @Query('page') page = '1',
+    @Query('limit') limit = '10',
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
+  ) {
+    return this.actorsService.findAll({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      search,
+      sortBy,
+      sortOrder,
+    });
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.actorsService.findOne(+id);
+    return this.actorsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateActorDto: UpdateActorDto) {
-    return this.actorsService.update(+id, updateActorDto);
+    return this.actorsService.update(id, updateActorDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.actorsService.remove(+id);
+    return this.actorsService.remove(id);
   }
 }
