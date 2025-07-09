@@ -56,7 +56,11 @@ class MoviesApi {
   }
 
   async createMovie(data: CreateMovieData): Promise<Movie> {
-    return this.client.post<Movie, CreateMovieData>("/movies", data);
+    const response = await this.client.post<{ movie: Movie }, CreateMovieData>(
+      "/movies",
+      data
+    );
+    return response.movie;
   }
 
   async updateMovie(id: string, data: UpdateMovieData): Promise<Movie> {

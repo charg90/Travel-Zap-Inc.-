@@ -5,6 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { moviesApi } from "@/lib/api/movies";
 import type { Movie } from "@/types";
+import { toast } from "sonner";
 
 interface EditMovieFormData {
   title: string;
@@ -106,6 +107,7 @@ export function useEditMovie(): UseEditMovieReturn {
       onSuccess(updatedMovie);
     } catch (error) {
       console.error("Error updating movie:", error);
+      toast.error("Error updating movie");
 
       if (error instanceof Error) {
         setErrors({ submit: error.message });

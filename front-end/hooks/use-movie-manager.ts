@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { moviesApi } from "@/lib/api/movies";
 import type { Movie } from "@/types";
 import { useDebounce } from "./use-debounce";
+import { toast } from "sonner";
 
 export function useMoviesManager(
   initialMovies: Movie[],
@@ -30,10 +31,10 @@ export function useMoviesManager(
     fetchMovies();
   }, [debouncedSearch, currentPage]);
 
-  const handleAddMovie = (movie: Omit<Movie, "id" | "ratings" | "actors">) => {
+  const handleAddMovie = (movie: Omit<Movie, "ratings" | "actors">) => {
     setMovies((prev) => [
       ...prev,
-      { ...movie, id: Date.now().toString(), ratings: 0, actors: [] },
+      { ...movie, id: movie.id, ratings: 0, actors: [] },
     ]);
   };
 
@@ -43,6 +44,25 @@ export function useMoviesManager(
         movie.id === updatedMovie.id ? { ...movie, ...updatedMovie } : movie
       )
     );
+  };
+  const createMovie = async (data: Omit<Movie, "id" | "actors">) => {
+    try {
+      const movieData = {
+        title: data.title,
+        description: data.description,
+        ratings: data.ratings || 0,
+      };
+      const created = await moviesApi.createMovie(movieData);
+      setMovies((prev) => [created, ...prev]);
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "message" in error) {
+        console.error("API Error:", (error as { message: string }).message);
+        toast.error("API occurred");
+      } else {
+        console.error("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.");
+      }
+    }
   };
 
   return {
@@ -54,5 +74,6 @@ export function useMoviesManager(
     totalPages,
     handleAddMovie,
     handleUpdateMovie,
+    createMovie,
   };
 }

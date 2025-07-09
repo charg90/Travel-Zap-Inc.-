@@ -7,6 +7,7 @@ import { FormModal } from "./modal";
 import type { Actor, Movie } from "@/types";
 import { actorsApi } from "@/lib/api/actors";
 import MultiSelect from "../multi-select";
+import { toast } from "sonner";
 
 interface AddActorModalProps {
   isOpen: boolean;
@@ -70,6 +71,7 @@ export default function AddActorModal({
       onClose();
     } catch (error) {
       console.error("Error adding actor:", error);
+      toast.error("Error adding actor");
     } finally {
       setIsSubmitting(false);
     }

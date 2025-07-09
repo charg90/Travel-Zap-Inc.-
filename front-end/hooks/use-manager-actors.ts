@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Actor } from "@/types";
 import { actorsApi } from "@/lib/api/actors";
 import { useDebounce } from "./use-debounce";
+import { toast } from "sonner";
 
 type UseManagerActorsOptions = {
   initialActors: Actor[];
@@ -36,6 +37,7 @@ export function useManagerActors({
       setTotalPages(newTotalPages);
     } catch (error) {
       console.error("Error fetching actors:", error);
+      toast.error("Error fetching actors");
     }
   }, [currentPage, debouncedSearchTerm]);
 

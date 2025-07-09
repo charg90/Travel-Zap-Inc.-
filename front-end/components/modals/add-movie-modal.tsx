@@ -2,13 +2,18 @@
 
 import { useState } from "react";
 import { FormModal } from "./modal";
-import type { Movie } from "@/types";
+
 import { useAddMovie } from "@/hooks/use-add-movie";
 
 interface AddMovieModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (movie: Omit<Movie, "id" | "ratings" | "actors">) => void;
+  onSubmit: (data: {
+    id: string;
+    title: string;
+    description: string;
+    ratings: number;
+  }) => void;
 }
 
 export default function AddMovieModal({
@@ -17,18 +22,21 @@ export default function AddMovieModal({
   onSubmit,
 }: AddMovieModalProps) {
   const [formData, setFormData] = useState({
+    id: "",
     title: "",
     description: "",
     ratings: 0,
   });
-  const { createMovie, isSubmitting, errors } = useAddMovie(() => {
-    onSubmit(formData);
-    setFormData({ title: "", description: "", ratings: 0 });
+
+  const { isSubmitting, errors } = useAddMovie(() => {
+    setFormData({ id: "", title: "", description: "", ratings: 0 });
     onClose();
   });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMovie(formData);
+    onSubmit(formData);
+    setFormData({ id: "", title: "", description: "", ratings: 0 });
+    onClose();
   };
 
   return (
