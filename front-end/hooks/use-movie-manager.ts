@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { moviesApi } from "@/lib/api/movies";
 import type { Movie } from "@/types";
 import { useDebounce } from "./use-debounce";
+import { toast } from "sonner";
 
 export function useMoviesManager(
   initialMovies: Movie[],
@@ -56,8 +57,10 @@ export function useMoviesManager(
     } catch (error: unknown) {
       if (error && typeof error === "object" && "message" in error) {
         console.error("API Error:", (error as { message: string }).message);
+        toast.error("API occurred");
       } else {
         console.error("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.");
       }
     }
   };

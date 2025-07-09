@@ -1,6 +1,7 @@
 'use client';
 
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
   children: ReactNode;
@@ -24,6 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
+    toast.error(error.message || 'An unexpected error occurred');
   }
 
   public render() {
@@ -37,7 +39,10 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
             <button
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              onClick={() => this.setState({ hasError: false, error: null })}
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                toast.success('Page recovered successfully');
+              }}
             >
               Try again
             </button>
