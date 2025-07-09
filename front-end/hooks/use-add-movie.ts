@@ -26,7 +26,13 @@ export function useAddMovie(onSuccess?: (movie: Movie) => void) {
 
     setIsSubmitting(true);
     try {
-      const created = await moviesApi.createMovie(data);
+      const movieData = {
+        title: data.title,
+        description: data.description,
+        ratings: data.ratings || 0,
+      };
+      const created = await moviesApi.createMovie(movieData);
+
       onSuccess?.(created);
     } catch (error: unknown) {
       console.error("Error adding movie:", error);

@@ -5,7 +5,7 @@ import Pagination from "@/components/pagination";
 import { useMoviesManager } from "@/hooks/use-movie-manager";
 import type { Actor, Movie } from "@/types";
 import { Plus, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   initialMovies: Movie[];
@@ -22,10 +22,12 @@ function ClientSideDashboard({ initialMovies, totalPagesDb }: Props) {
     setCurrentPage,
     movies,
     totalPages,
-    handleAddMovie,
+    createMovie,
     handleUpdateMovie,
   } = useMoviesManager(initialMovies, totalPagesDb);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {}, [movies]);
 
   return (
     <div className="flex flex-col flex-1 w-full h-full p-6 space-y-6">
@@ -93,7 +95,7 @@ function ClientSideDashboard({ initialMovies, totalPagesDb }: Props) {
       <AddMovieModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddMovie}
+        onSubmit={createMovie}
       />
     </div>
   );
