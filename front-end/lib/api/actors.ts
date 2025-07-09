@@ -6,7 +6,7 @@ export interface ActorFilters {
   page?: number;
   limit?: number;
   sortBy?: "name" | "lastName" | "id";
-  sortOrder?: "asc" | "desc";
+  sortOrder?: "ASC" | "DESC";
 }
 
 export interface ActorsResponse {
@@ -49,7 +49,6 @@ class ActorsApi {
     return client.get<ActorsResponse>(`/actors?${params.toString()}`);
   }
 
-  // Get single actor by ID
   async getActor(id: number, isServer = false): Promise<Actor> {
     const client = isServer ? this.serverClient : this.client;
     return client.get<Actor>(`/actors/${id}`);

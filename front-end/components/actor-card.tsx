@@ -10,7 +10,7 @@ interface ActorCardProps {
   onUpdateActor?: (updatedActor: Actor) => void;
 }
 
-export default function ActorCard({ actor }: ActorCardProps) {
+export default function ActorCard({ actor, onUpdateActor }: ActorCardProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 
@@ -152,6 +152,7 @@ export default function ActorCard({ actor }: ActorCardProps) {
         isOpen={showEdit}
         onClose={() => setShowEdit(false)}
         actor={actor}
+        onUpdateActor={onUpdateActor}
       />
     </>
   );

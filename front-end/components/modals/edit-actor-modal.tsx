@@ -14,12 +14,14 @@ interface EditActorModalProps {
   isOpen: boolean;
   onClose: () => void;
   actor: Actor;
+  onUpdate?: (updatedActor: Actor) => void;
 }
 
 export default function EditActorModal({
   isOpen,
   onClose,
   actor,
+  onUpdate,
 }: EditActorModalProps) {
   const { movies: movieFromContext } = useMoviesActors();
   const [formData, setFormData] = useState({
@@ -30,10 +32,8 @@ export default function EditActorModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Inicializar el formulario cuando se abre el modal
   useEffect(() => {
     if (isOpen && actor && movieFromContext.length > 0) {
-      // Encontrar las películas que coinciden con las del actor
       const actorMovies = actor.movies
         ? movieFromContext.filter((movie) =>
             actor.movies!.includes(movie.title)
@@ -47,7 +47,7 @@ export default function EditActorModal({
       });
       setErrors({});
     }
-  }, [isOpen, actor, movieFromContext]); // Usar actor en lugar de actor.id
+  }, [isOpen, actor, movieFromContext]);
 
   const movieOptions = useMemo(
     () =>
@@ -59,7 +59,6 @@ export default function EditActorModal({
     [movieFromContext]
   );
 
-  // Corregir el tipo: los IDs pueden ser number o string
   const selectedMovieValues = useMemo(
     () => formData.movies.map((movie) => movie.id),
     [formData.movies]
@@ -87,6 +86,14 @@ export default function EditActorModal({
         };
 
         const response = await actorsApi.updateActor(actor.id, updatedActor);
+        if (onUpdate) {
+          onUpdate({
+            ...actor,
+            name: formData.name,
+            lastName: formData.lastName,
+            movies: formData.movies.map((m) => m.title),
+          });
+        }
 
         await revalidateActors();
         console.log("Actor updated successfully:", response);

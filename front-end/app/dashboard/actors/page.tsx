@@ -8,12 +8,13 @@ async function page() {
   const { actors, total, totalPages } = await actorsApi.getActors(
     {
       page: 1,
-      limit: 10,
+      limit: 8,
       sortBy: "name",
-      sortOrder: "asc",
+      sortOrder: "ASC",
     },
     true
   );
+  console.log(total, totalPages);
   const { movies } = await moviesApi.getMovies(
     {
       page: 1,
@@ -26,7 +27,6 @@ async function page() {
   return (
     <MoviesActorsProvider initialActors={actors} initialMovies={movies}>
       <ClientSideActors
-        initialActors={actors}
         total={total}
         initialTotalPage={totalPages}
         movies={movies}

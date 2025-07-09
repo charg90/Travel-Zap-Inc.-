@@ -1,14 +1,20 @@
 // context/MoviesActorsContext.tsx
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import type { Movie, Actor } from "@/types";
 
 interface MoviesActorsContextValue {
   movies: Movie[];
   setMovies: (movies: Movie[]) => void;
   actors: Actor[];
-  setActors: (actors: Actor[]) => void;
+  setActors: Dispatch<SetStateAction<Actor[]>>;
 }
 
 const MoviesActorsContext = createContext<MoviesActorsContextValue | undefined>(

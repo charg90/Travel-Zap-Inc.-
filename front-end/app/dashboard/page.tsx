@@ -12,9 +12,9 @@ export default async function Dashboard() {
   const { actors } = await actorsApi.getActors(
     {
       page: 1,
-      limit: 10,
+      limit: 100,
       sortBy: "name",
-      sortOrder: "asc",
+      sortOrder: "ASC",
     },
     true
   );

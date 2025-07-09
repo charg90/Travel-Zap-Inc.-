@@ -2,29 +2,35 @@
 import ActorCard from "@/components/actor-card";
 import AddActorModal from "@/components/modals/add-actor-modal";
 import Pagination from "@/components/pagination";
+import { useMoviesActors } from "@/context/actors-context";
+import { usePaginatedActors } from "@/hooks/use-paginate-actors";
 import { Actor, Movie } from "@/types";
 import { Plus, Search, User } from "lucide-react";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Props = {
-  initialActors: Actor[];
   total: number;
   initialTotalPage: number;
   page: number;
   movies: Movie[];
 };
 
-function ClientSideActors({
-  initialActors,
-  total,
-  initialTotalPage,
-  page,
-  movies,
-}: Props) {
-  const [actors, setActors] = useState(initialActors);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(page);
-  const [totalPages, setTotalPages] = useState(initialTotalPage);
+function ClientSideActors({ initialTotalPage, page, movies }: Props) {
+  const { actors: initialActors } = useMoviesActors();
+  const {
+    actors,
+    setActors,
+    currentPage,
+    totalPages,
+    searchTerm,
+    setCurrentPage,
+    setSearchTerm,
+    refreshActors,
+  } = usePaginatedActors({
+    initialActors,
+    initialTotalPages: initialTotalPage,
+    initialPage: page,
+  });
   const [showAddModal, setShowAddModal] = useState(false);
   const filteredActors = actors.filter((actor) => {
     const fullName = `${actor.name} ${actor.lastName}`.toLowerCase();
@@ -34,10 +40,14 @@ function ClientSideActors({
       actor.movies?.some((movie) => movie.toLowerCase().includes(searchLower))
     );
   });
-
-  useEffect(() => {
-    setActors(initialActors);
-  }, [initialActors]);
+  const handleUpdateActor = (updatedActor: Actor) => {
+    refreshActors();
+    setActors((prev) =>
+      prev.map((actor) =>
+        actor.id === updatedActor.id ? { ...actor, ...updatedActor } : actor
+      )
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -85,7 +95,11 @@ function ClientSideActors({
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {actors.map((actor) => (
-              <ActorCard key={actor.id} actor={actor} />
+              <ActorCard
+                key={actor.id}
+                actor={actor}
+                onUpdateActor={handleUpdateActor}
+              />
             ))}
           </div>
 
