@@ -13,6 +13,7 @@ import {
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { PublicRoute } from 'src/decorators/public-route.decorator';
 
 @Controller('movies')
 export class MoviesController {
@@ -24,7 +25,7 @@ export class MoviesController {
     const movie = await this.moviesService.create(createMovieDto);
     return movie;
   }
-
+  @PublicRoute()
   @Get()
   async findAll(
     @Query('page') page,
