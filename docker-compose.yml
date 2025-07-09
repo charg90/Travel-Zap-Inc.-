@@ -54,5 +54,18 @@ services:
     ports:
       - "3000:3000"
 
+  frontend:
+    build: ./front-end
+    container_name: movie_frontend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:3000"
+      API_URL: "http://backend:3000"
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: secret_key
+    command: sh -c "npm install && npm run build && PORT=3001 && npm run start"
 volumes:
   db_data:
