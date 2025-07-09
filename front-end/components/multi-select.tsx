@@ -33,7 +33,6 @@ export default function MultiSelect({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -185,7 +184,6 @@ export default function MultiSelect({
   );
 }
 
-// Simple single select component
 export function Select({
   options,
   value,

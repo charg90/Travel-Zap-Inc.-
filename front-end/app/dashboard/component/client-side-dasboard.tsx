@@ -17,6 +17,7 @@ function ClientSideDashboard({ initialMovies, totalPagesDb, page }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [movies, setMovies] = useState(initialMovies);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalPages, setTotalPages] = useState(totalPagesDb);
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -30,7 +31,7 @@ function ClientSideDashboard({ initialMovies, totalPagesDb, page }: Props) {
   };
   useEffect(() => {
     setMovies(initialMovies);
-  }, [initialMovies, totalPagesDb, page]);
+  }, [initialMovies, page]);
 
   return (
     <>

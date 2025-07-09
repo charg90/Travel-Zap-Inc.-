@@ -18,6 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {

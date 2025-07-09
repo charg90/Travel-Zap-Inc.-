@@ -1,5 +1,3 @@
-// hooks/useCreateMovie.ts
-
 import { useState } from "react";
 import { moviesApi } from "@/lib/api/movies";
 import type { Movie } from "@/types";
@@ -46,6 +44,6 @@ export function useAddMovie(onSuccess?: (movie: Movie) => void) {
     createMovie,
     isSubmitting,
     errors,
-    setErrors, // optionally exposed if needed
+    setErrors,
   };
 }

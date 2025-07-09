@@ -174,7 +174,6 @@ class ApiClient {
   }
 }
 
-// Create singleton instances
 export const apiClient = new ApiClient();
 export const serverApiClient = new ApiClient(process.env.API_URL, true);
 

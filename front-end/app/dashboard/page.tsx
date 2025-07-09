@@ -3,12 +3,13 @@ import { actorsApi } from "@/lib/api/actors";
 import { getMovies } from "@/lib/api/server-side-fetch";
 
 export default async function Dashboard() {
-  const { movies, totalPages, page } = await getMovies({
+  const { movies, total, page } = await getMovies({
     page: 1,
     limit: 8,
     sortBy: "rating",
     sortOrder: "desc",
   });
+
   const { actors } = await actorsApi.getActors(
     {
       page: 1,
@@ -23,7 +24,7 @@ export default async function Dashboard() {
     <div className="space-y-6 w-full">
       <ClientSideDashboard
         initialMovies={movies}
-        totalPagesDb={totalPages}
+        totalPagesDb={total}
         page={page}
         actors={actors}
       />

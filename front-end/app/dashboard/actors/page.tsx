@@ -3,6 +3,7 @@ import React from "react";
 import ClientSideActors from "./components/client-side-actors";
 import { moviesApi } from "@/lib/api/movies";
 import { MoviesActorsProvider } from "@/context/actors-context";
+export const dynamic = "force-dynamic";
 
 async function page() {
   const { actors, total, totalPages } = await actorsApi.getActors(

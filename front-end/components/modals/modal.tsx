@@ -34,7 +34,6 @@ export default function Modal({
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
-  // Size classes
   const sizeClasses = {
     sm: "max-w-md",
     md: "max-w-lg",
@@ -43,7 +42,6 @@ export default function Modal({
     full: "max-w-full mx-4",
   };
 
-  // Handle escape key
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (closeOnEscape && event.key === "Escape") {
@@ -53,24 +51,23 @@ export default function Modal({
 
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
-      // Store the currently focused element
+
       previousActiveElement.current = document.activeElement as HTMLElement;
-      // Prevent body scroll
+
       document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
-      // Restore body scroll
+
       document.body.style.overflow = "unset";
-      // Restore focus to the previously focused element
+
       if (previousActiveElement.current) {
         previousActiveElement.current.focus();
       }
     };
   }, [isOpen, closeOnEscape, onClose]);
 
-  // Focus trap
   useEffect(() => {
     if (isOpen && modalRef.current) {
       const focusableElements = modalRef.current.querySelectorAll(
@@ -98,7 +95,7 @@ export default function Modal({
       };
 
       document.addEventListener("keydown", handleTabKey);
-      // Focus the first focusable element
+
       firstElement?.focus();
 
       return () => {
@@ -107,7 +104,6 @@ export default function Modal({
     }
   }, [isOpen]);
 
-  // Handle backdrop click
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdropClick && event.target === event.currentTarget) {
       onClose();
@@ -167,11 +163,9 @@ export default function Modal({
     </div>
   );
 
-  // Render modal in portal
   return createPortal(modalContent, document.body);
 }
 
-// Convenience components for common modal patterns
 export function ConfirmModal({
   isOpen,
   onClose,
@@ -230,7 +224,6 @@ export function ConfirmModal({
   );
 }
 
-// Form Modal wrapper
 export function FormModal({
   isOpen,
   onClose,

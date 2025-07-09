@@ -18,15 +18,12 @@ export default function ActorCard({ actor, onUpdateActor }: ActorCardProps) {
     <>
       <div className="card overflow-hidden hover:shadow-lg transition-all duration-300 h-36 flex flex-col">
         <div className="p-4 flex flex-col h-full">
-          {/* Actor Name */}
           <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-lg">
             {actor.name} {actor.lastName}
           </h3>
 
-          {/* Spacer */}
           <div className="flex-1"></div>
 
-          {/* View Details Button */}
           <div className="mt-auto">
             <button
               onClick={() => setShowDetails(true)}
@@ -57,7 +54,6 @@ export default function ActorCard({ actor, onUpdateActor }: ActorCardProps) {
 
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
               <div className="space-y-6">
-                {/* Actor Info */}
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <User className="w-5 h-5 text-blue-500" />

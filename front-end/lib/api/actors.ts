@@ -32,7 +32,6 @@ class ActorsApi {
   private client = apiClient;
   private serverClient = serverApiClient;
 
-  // Get all actors with filters
   async getActors(
     filters?: ActorFilters,
     isServer = false
@@ -54,7 +53,6 @@ class ActorsApi {
     return client.get<Actor>(`/actors/${id}`);
   }
 
-  // Create new actor
   async createActor(data: CreateActorData): Promise<Actor> {
     const response = await this.client.post<{ actor: Actor }, CreateActorData>(
       "/actors",
@@ -63,28 +61,24 @@ class ActorsApi {
     return response.actor;
   }
 
-  // Update actor
   async updateActor(id: string, data: UpdateActorData): Promise<Actor> {
     return this.client.patch<Actor, UpdateActorData>(`/actors/${id}`, data);
   }
 
-  // Delete actor
   async deleteActor(id: number): Promise<void> {
     return this.client.delete<void>(`/actors/${id}`);
   }
 
-  // Search actors
   async searchActors(query: string, isServer = false): Promise<Actor[]> {
     const client = isServer ? this.serverClient : this.client;
     return client.get<Actor[]>(`/actors/search?q=${encodeURIComponent(query)}`);
   }
 
-  // Get actors by movie
   async getActorsByMovie(movieId: number, isServer = false): Promise<Actor[]> {
     const client = isServer ? this.serverClient : this.client;
     return client.get<Actor[]>(`/actors/movie/${movieId}`);
   }
-  // Add actor to movie
+
   async addActorToMovie(actorId: string, movieId: string): Promise<void> {
     return this.client.post<void>(
       `/actors/${actorId}/add-to-movie/${movieId}`,

@@ -14,14 +14,14 @@ interface EditActorModalProps {
   isOpen: boolean;
   onClose: () => void;
   actor: Actor;
-  onUpdate?: (updatedActor: Actor) => void;
+  onUpdateActor?: (updatedActor: Actor) => void;
 }
 
 export default function EditActorModal({
   isOpen,
   onClose,
   actor,
-  onUpdate,
+  onUpdateActor,
 }: EditActorModalProps) {
   const { movies: movieFromContext } = useMoviesActors();
   const [formData, setFormData] = useState({
@@ -72,6 +72,12 @@ export default function EditActorModal({
     return Object.keys(newErrors).length === 0;
   }, [formData.name, formData.lastName]);
 
+  const handleClose = useCallback(() => {
+    setFormData({ name: "", lastName: "", movies: [] });
+    setErrors({});
+    onClose();
+  }, [onClose]);
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -85,18 +91,20 @@ export default function EditActorModal({
           movies: formData.movies.map((movie) => movie.id),
         };
 
-        const response = await actorsApi.updateActor(actor.id, updatedActor);
-        if (onUpdate) {
-          onUpdate({
-            ...actor,
-            name: formData.name,
-            lastName: formData.lastName,
-            movies: formData.movies.map((m) => m.title),
-          });
+        await actorsApi.updateActor(actor.id, updatedActor);
+
+        const updatedActorData = {
+          ...actor,
+          name: formData.name,
+          lastName: formData.lastName,
+          movies: formData.movies.map((m) => m.title),
+        };
+
+        if (onUpdateActor) {
+          onUpdateActor(updatedActorData);
         }
 
         await revalidateActors();
-        console.log("Actor updated successfully:", response);
 
         handleClose();
       } catch (error) {
@@ -106,14 +114,8 @@ export default function EditActorModal({
         setIsSubmitting(false);
       }
     },
-    [actor, formData, validateForm]
+    [actor, formData, validateForm, onUpdateActor, handleClose]
   );
-
-  const handleClose = useCallback(() => {
-    setFormData({ name: "", lastName: "", movies: [] });
-    setErrors({});
-    onClose();
-  }, [onClose]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
