@@ -1,12 +1,8 @@
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-type Props = {
-  handleGetStarted: () => void;
-};
-
-function HeroSection({ handleGetStarted }: Props) {
+function HeroSection() {
   return (
     <section className="relative px-4 py-20">
       <div className="max-w-7xl mx-auto text-center">
@@ -28,15 +24,6 @@ function HeroSection({ handleGetStarted }: Props) {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button
-            onClick={handleGetStarted}
-            className="group px-8 py-4 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-200 flex items-center gap-2"
-          >
-            <Play className="size-5" />
-            Get Started
-            <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-
           <Link
             href="#features"
             className="px-8 py-4 border-2 border-white/30 text-white rounded-xl font-semibold hover:bg-white/10 transition-colors"
