@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -25,11 +26,21 @@ export class MoviesController {
   }
 
   @Get()
-  async findAll() {
-    const movies = await this.moviesService.findAll();
+  async findAll(
+    @Query('page') page,
+    @Query('limit') limit,
+    @Query('search') search?: string,
+  ) {
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    const movies = await this.moviesService.findAll(
+      pageNumber,
+      limitNumber,
+      search,
+    );
     return movies;
   }
-
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const movie = await this.moviesService.findOne(id);

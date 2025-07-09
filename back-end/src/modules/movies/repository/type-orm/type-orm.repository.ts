@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { MoviesRepository } from '../movies.repository';
 import { Movie as DomainMovie } from '../../domain/movie.domain';
 import { Movie as TypeORMMovie } from '../../entities/movie.entity';
@@ -22,12 +22,30 @@ export class TypeORMMoviesRepository implements MoviesRepository {
     return MovieMapper.toDomain(savedMovie);
   }
 
-  async findAll(): Promise<DomainMovie[]> {
-    const movies = await this.typeOrmRepository.find({
+  async findAll(
+    page = 1,
+    limit = 10,
+    search?: string,
+  ): Promise<{ movies: DomainMovie[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const where = search
+      ? [
+          { title: ILike(`%${search}%`) }, // podés agregar más campos si querés
+        ]
+      : {};
+
+    const [movies, total] = await this.typeOrmRepository.findAndCount({
+      where,
       relations: ['actors', 'ratings'],
+      skip,
+      take: limit,
     });
 
-    return movies.map((movie) => MovieMapper.toDomain(movie));
+    return {
+      movies: movies.map((movie) => MovieMapper.toDomain(movie)),
+      total,
+    };
   }
 
   async findById(id: string): Promise<DomainMovie | null> {

@@ -12,8 +12,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // async validateUser(username: string, password: string): Promise<any> {}
-
   async register(registerDto: RegisterDto) {
     try {
       const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -57,7 +55,7 @@ export class AuthService {
       throw new HttpException(
         `Error logging in user: ${err}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // Use HttpStatus enum
+      );
     }
   }
 

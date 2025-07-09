@@ -6,7 +6,7 @@ export class UserMapper {
     return User.create(
       {
         email: user.email,
-        password: user.password, // In a real application, you should not expose the password
+        password: user.password,
       },
       user.id,
     );
@@ -15,7 +15,7 @@ export class UserMapper {
     const typeOrmUser = new TypeORMUser();
     typeOrmUser.id = user.id;
     typeOrmUser.email = user.email;
-    typeOrmUser.password = user.password; // In a real application, you should not expose the password
+    typeOrmUser.password = user.password;
 
     return typeOrmUser;
   }

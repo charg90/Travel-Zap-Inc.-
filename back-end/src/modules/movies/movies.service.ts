@@ -27,11 +27,19 @@ export class MoviesService {
     }
   }
 
-  async findAll(): Promise<GetAllMoviesResponseDto> {
+  async findAll(
+    page = 1,
+    limit = 10,
+    search?: string,
+  ): Promise<GetAllMoviesResponseDto> {
     try {
-      const movies = await this.moviesRepository.findAll();
+      const { movies, total } = await this.moviesRepository.findAll(
+        page,
+        limit,
+        search,
+      );
 
-      return new GetAllMoviesResponseDto(movies);
+      return new GetAllMoviesResponseDto(movies, total, page, limit);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

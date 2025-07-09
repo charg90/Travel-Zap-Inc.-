@@ -49,7 +49,7 @@ export class TypeOrmAuthRepository implements AuthRepository {
     });
 
     const savedUserEntity = await this.userRepository.save(newUserEntity);
-    return UserMapper.toDomain(savedUserEntity); // Map TypeORMUser to User domain object
+    return UserMapper.toDomain(savedUserEntity);
   }
 
   async findByEmail(email: string): Promise<User | null> {

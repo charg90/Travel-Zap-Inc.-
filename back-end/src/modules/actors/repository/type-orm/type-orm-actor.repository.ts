@@ -28,11 +28,45 @@ export class TypeORMActorRepository implements ActorRepository {
     return ActorMapper.toDomain(savedWithRelations);
   }
 
-  async findAll(): Promise<DomainActor[]> {
-    const actors = await this.typeOrmRepository.find({
-      relations: ['movies'],
-    });
-    return actors.map((actor) => ActorMapper.toDomain(actor));
+  async findAllPaginated({
+    page,
+    limit,
+    search,
+    sortBy,
+    sortOrder,
+  }: {
+    page: number;
+    limit: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder: 'ASC' | 'DESC';
+  }): Promise<{ data: DomainActor[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.typeOrmRepository
+      .createQueryBuilder('actor')
+      .leftJoinAndSelect('actor.movies', 'movies');
+
+    if (search) {
+      queryBuilder.where(
+        'actor.name ILIKE :search OR actor.lastName ILIKE :search',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (sortBy) {
+      queryBuilder.orderBy(`actor.${sortBy}`, sortOrder);
+    }
+
+    const [actors, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data: actors.map(ActorMapper.toDomain),
+      total,
+    };
   }
 
   async findById(id: string): Promise<DomainActor | null> {

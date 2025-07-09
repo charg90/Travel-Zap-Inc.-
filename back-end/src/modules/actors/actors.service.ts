@@ -4,7 +4,10 @@ import { UpdateActorDto } from './dto/update-actor.dto';
 import { Actor } from './domain/actors.domain';
 import { ActorRepository } from './repository/actor.repository';
 import { ActorException } from './exeptions/actor.exeption';
-import { GetAllActorsResponseDto } from './dto/get-all.dto';
+import {
+  FindAllActorsOptions,
+  GetAllActorsResponseDto,
+} from './dto/get-all.dto';
 import { SingleActorResponseDto } from './dto/single-actor.dto';
 
 @Injectable()
@@ -22,10 +25,23 @@ export class ActorsService {
     }
   }
 
-  async findAll() {
+  async findAll(options: FindAllActorsOptions) {
+    const { page, limit, search, sortBy, sortOrder } = options;
     try {
-      const actors = await this.actorRepository.findAll();
-      return new GetAllActorsResponseDto(actors);
+      const actors = await this.actorRepository.findAllPaginated({
+        page,
+        limit,
+        search,
+        sortBy,
+        sortOrder,
+      });
+
+      return new GetAllActorsResponseDto(
+        actors.data,
+        actors.total,
+        page,
+        limit,
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -52,7 +68,7 @@ export class ActorsService {
     }
 
     try {
-      let updateData: Partial<Actor> = {};
+      const updateData: Partial<Actor> = {};
       if (updateActorDto.name) {
         updateData.name = updateActorDto.name;
       }
