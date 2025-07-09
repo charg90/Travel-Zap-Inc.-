@@ -1,6 +1,6 @@
 "use client";
 
-import { Film, Users, X, Home } from "lucide-react";
+import { Film, Users, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,7 +13,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Movies", href: "/dashboard", icon: Film },
     { name: "Actors", href: "/dashboard/actors", icon: Users },
   ];

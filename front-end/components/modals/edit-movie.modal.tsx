@@ -4,19 +4,19 @@ import { useState, useEffect } from "react";
 import { FormModal } from "./modal";
 import type { Movie } from "@/types";
 import { moviesApi } from "@/lib/api/movies";
-import { useRouter } from "next/navigation";
-import { revalidateMovies } from "@/actions/revalidate-movies";
 
 interface EditMovieModalProps {
   isOpen: boolean;
   onClose: () => void;
   movie: Movie;
+  onUpdate: (updatedMovie: Movie) => void;
 }
 
 export default function EditMovieModal({
   isOpen,
   onClose,
   movie,
+  onUpdate,
 }: EditMovieModalProps) {
   const [formData, setFormData] = useState({
     title: "",
@@ -28,8 +28,6 @@ export default function EditMovieModal({
     description?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const router = useRouter();
 
   useEffect(() => {
     if (isOpen && movie) {
@@ -66,9 +64,7 @@ export default function EditMovieModal({
       };
 
       await moviesApi.updateMovie(movie.id, updatedMovie);
-
-      await revalidateMovies();
-      router.refresh();
+      onUpdate({ ...movie, ...updatedMovie });
 
       onClose();
     } catch {

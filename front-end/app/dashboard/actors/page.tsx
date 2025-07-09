@@ -15,7 +15,7 @@ async function page() {
     },
     true
   );
-  console.log(total, totalPages);
+
   const { movies } = await moviesApi.getMovies(
     {
       page: 1,

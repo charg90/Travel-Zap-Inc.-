@@ -8,9 +8,10 @@ import EditMovieModal from "./modals/edit-movie.modal";
 
 interface MovieCardProps {
   movie: Movie;
+  onUpdate: (updatedMovie: Movie) => void;
 }
 
-export default function MovieCard({ movie }: MovieCardProps) {
+export default function MovieCard({ movie, onUpdate }: MovieCardProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRating, setShowRating] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -143,11 +144,15 @@ export default function MovieCard({ movie }: MovieCardProps) {
         onClose={() => setShowRating(false)}
         movie={movie}
         onSubmitRating={handleRatingSubmit}
+        onUpdateRating={(movieId, newRating) => {
+          onUpdate({ ...movie, ratings: newRating });
+        }}
       />
       <EditMovieModal
         isOpen={showEdit}
         onClose={() => setShowEdit(false)}
         movie={movie}
+        onUpdate={onUpdate}
       />
     </>
   );

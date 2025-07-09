@@ -1,37 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
 import { Actor } from "@/types";
 import { actorsApi } from "@/lib/api/actors";
+import { useDebounce } from "./use-debounce";
 
-type UsePaginatedActorsOptions = {
+type UseManagerActorsOptions = {
   initialActors: Actor[];
   initialTotalPages: number;
   initialPage: number;
 };
 
-export function usePaginatedActors({
+export function useManagerActors({
   initialActors,
   initialTotalPages,
   initialPage,
-}: UsePaginatedActorsOptions) {
+}: UseManagerActorsOptions) {
   const [actors, setActors] = useState(initialActors);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const debouncedSearchTerm = useDebounce(searchTerm);
+
   const fetchActors = useCallback(async () => {
-    const params = new URLSearchParams({
-      page: currentPage.toString(),
-      limit: "12",
-    });
-
-    if (searchTerm) {
-      params.append("search", searchTerm);
-    }
-
     try {
       const { actors: loadedActors, totalPages: newTotalPages } =
         await actorsApi.getActors({
-          search: searchTerm,
+          search: debouncedSearchTerm,
           page: currentPage,
           limit: 8,
           sortBy: "name",
@@ -43,28 +37,24 @@ export function usePaginatedActors({
     } catch (error) {
       console.error("Error fetching actors:", error);
     }
-  }, [currentPage, searchTerm]);
+  }, [currentPage, debouncedSearchTerm]);
 
   useEffect(() => {
     fetchActors();
-  }, [currentPage, searchTerm, fetchActors]);
+  }, [fetchActors]);
 
   const updateActor = (updatedActor: Actor) => {
     setActors((prevActors) =>
-      prevActors.map((actor) => {
-        const currentId = String(actor.id);
-        const updatedId = String(updatedActor.id);
-
-        return currentId === updatedId
+      prevActors.map((actor) =>
+        String(actor.id) === String(updatedActor.id)
           ? {
               ...updatedActor,
-              id: updatedId,
               movies: Array.isArray(updatedActor.movies)
                 ? [...updatedActor.movies]
                 : [],
             }
-          : actor;
-      })
+          : actor
+      )
     );
   };
 

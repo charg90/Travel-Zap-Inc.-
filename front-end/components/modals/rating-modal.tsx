@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Star, X } from "lucide-react";
 import type { Movie } from "@/types";
 import { moviesApi } from "@/lib/api/movies";
-import { revalidateMovies } from "@/actions/revalidate-movies";
 
 interface RatingModalProps {
   isOpen: boolean;
   onClose: () => void;
   movie: Movie;
   onSubmitRating: (movieId: string, rating: number) => void;
+  onUpdateRating: (movieId: string, newRating: number) => void;
 }
 
 interface StarRatingProps {
@@ -59,6 +59,7 @@ export default function RatingModal({
   isOpen,
   onClose,
   movie,
+  onUpdateRating,
 }: RatingModalProps) {
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -70,8 +71,8 @@ export default function RatingModal({
       console.log(movie.id, userRating);
 
       await moviesApi.submitRating(movie.id, userRating);
+      onUpdateRating(movie.id, userRating);
 
-      await revalidateMovies();
       onClose();
     } catch (error) {
       console.error("Failed to submit rating:", error);

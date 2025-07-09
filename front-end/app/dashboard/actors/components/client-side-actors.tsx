@@ -3,7 +3,7 @@ import ActorCard from "@/components/actor-card";
 import AddActorModal from "@/components/modals/add-actor-modal";
 import Pagination from "@/components/pagination";
 import { useMoviesActors } from "@/context/actors-context";
-import { usePaginatedActors } from "@/hooks/use-paginate-actors";
+import { useManagerActors } from "@/hooks/use-manager-actors";
 import { actorsApi } from "@/lib/api/actors";
 import { Actor, Movie } from "@/types";
 import { Plus, Search, User } from "lucide-react";
@@ -27,20 +27,14 @@ function ClientSideActors({ initialTotalPage, page, movies }: Props) {
     setSearchTerm,
     refreshActors,
     updateActor,
-  } = usePaginatedActors({
+  } = useManagerActors({
     initialActors,
     initialTotalPages: initialTotalPage,
     initialPage: page,
   });
+
   const [showAddModal, setShowAddModal] = useState(false);
-  const filteredActors = actors.filter((actor) => {
-    const fullName = `${actor.name} ${actor.lastName}`.toLowerCase();
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      fullName.includes(searchLower) ||
-      actor.movies?.some((movie) => movie.toLowerCase().includes(searchLower))
-    );
-  });
+
   const handleUpdateActor = (updatedActor: Actor) => {
     const actorToUpdate: Actor = {
       ...updatedActor,
@@ -52,6 +46,7 @@ function ClientSideActors({ initialTotalPage, page, movies }: Props) {
     updateActor(actorToUpdate);
     refreshActors();
   };
+
   const handleCreateActor = async (newActor: Omit<Actor, "id">) => {
     try {
       const createdActor = await actorsApi.createActor({
@@ -66,6 +61,7 @@ function ClientSideActors({ initialTotalPage, page, movies }: Props) {
       console.error("Error al crear el actor:", error);
     }
   };
+
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-6 p-6">
@@ -84,7 +80,10 @@ function ClientSideActors({ initialTotalPage, page, movies }: Props) {
                 type="text"
                 placeholder="Search actors, movies, or nationality..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="input-field pl-10"
               />
             </div>
@@ -101,7 +100,7 @@ function ClientSideActors({ initialTotalPage, page, movies }: Props) {
       </div>
 
       <div className="flex-1 px-6">
-        {filteredActors.length === 0 ? (
+        {actors.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <User className="h-16 w-16 mx-auto" />
